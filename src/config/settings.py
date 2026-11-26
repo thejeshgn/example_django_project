@@ -118,6 +118,22 @@ USE_TZ = True
 STATIC_URL = "static/"
 
 
+# Dramatiq (background tasks)
+# In-memory stub broker; swap for RedisBroker/RabbitmqBroker when a
+# real broker is available and run workers with `manage.py rundramatiq`.
+DRAMATIQ_BROKER = {
+    "BROKER": "dramatiq.brokers.redis.RedisBroker",
+    "OPTIONS": {},
+    "MIDDLEWARE": [
+        "dramatiq.middleware.AgeLimit",
+        "dramatiq.middleware.TimeLimit",
+        "dramatiq.middleware.Callbacks",
+        "dramatiq.middleware.Retries",
+        "django_dramatiq.middleware.DbConnectionsMiddleware",
+    ],
+}
+
+
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
 

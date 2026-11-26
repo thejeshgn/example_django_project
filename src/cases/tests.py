@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from django.contrib.auth.models import User
 from django.urls import reverse
 from rest_framework import status
@@ -24,12 +26,14 @@ class CaseAPITests(APITestCase):
             [{"id": 1, "person": "judge1", "role": "judge"}],
         )
 
-    def test_create_case(self):
+    @patch("cases.views.hello_message.send")
+    def test_create_case(self, mock_hello_send):
         url = reverse("case-list")
         response = self.client.post(url, {"number": "C-002", "title": "New Case"})
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertTrue(Case.objects.filter(number="C-002").exists())
+        mock_hello_send.assert_called_once_with()
 
     def test_update_case_status(self):
         url = reverse("case-detail", args=[self.case.pk])
